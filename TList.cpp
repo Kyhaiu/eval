@@ -54,7 +54,7 @@ template <typename T> void TList<T>::setBegin(T &_info){
 template <typename T> void TList<T>::removeBegin(){
     if(getSize() == 0){
         std::cout << "Erro!" << std::endl;
-    } else if(getSize == 1){
+    } else if(getSize() == 1){
         delete getHead();
         updateSize(-1);
     } else{
