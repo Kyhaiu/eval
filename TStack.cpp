@@ -1,5 +1,5 @@
 #include "TStack.h"
-#include "TList.h"
+#include "TList.cpp"
 #include <iostream>
 
 template <typename T> TStack<T>::TStack(){
@@ -15,7 +15,7 @@ template <typename T> void TStack<T>::pop(){
 }
 
 template <typename T> void TStack<T>::top(){
-    TTie<T> *aux = Stack->getHead(0);
+    TTie<T> *aux = Stack->getHead();
     aux->getInfo();
     std::cout << "Top = " << aux->getInfo() << std::endl;
 }
