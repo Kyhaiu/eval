@@ -1,8 +1,7 @@
 #include <iostream>
-#include "TList.cpp"
+#include "TStack.cpp"
 using namespace std;
 
-int main()
-{
-    TList<int>* lista = new TList<int>();
+int main(){
+
 }
