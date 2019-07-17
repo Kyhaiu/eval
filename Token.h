@@ -1,12 +1,13 @@
 #ifndef TOKEN_H_INCLUDED
 #define TOKEN_H_INCLUDED
-#include<tuple>
 #include<vector>
+#include<tuple>
 #include<string>
 
 class Token{
     private:
-        const std::vector<std::tuple<std::string, int, bool>> tokens =
+        ///constante que determina os operadores, preioridade de cada operador e se ele é unario
+        const std::vector<std::tuple<std::string, int, bool>> operators =
             {{"+",   1, false},
              {"-",   1, false},
              {"*",   2, false},
@@ -17,16 +18,34 @@ class Token{
              {"log",  4, true},
              {"sin",  4, true},
              {"cos",  4, true},
-             {"tan",  4, true},
-             {"NaOP", 0, true}};///Not a Operation
-        std::tuple<std::string, int, bool> typeOp;
-        bool operand;
+             {"tan",  4, true}};
+        ///variavel que armazena o Token recebido
+        std::string receivedToken;
+        ///variavel que armaena o tipo do token(1° parametro indica se é um operador ou operando, segundo parametro se é unário)
+        std::tuple<bool, bool> typeToken;
+        ///caso o token recebido seja um numero, essa variavel armazena seu valor
+        double number;
+        ///verifica se o operador é unario, consultando na constante "operators"
+        bool isUnary(const std::string &_token);
+        ///verifica se o operador é um operador aritimético(não fiz pra função ainda), consultando na constante "operators"
+        bool isOperator(const std::string &_token);
+        ///caso o token for um numero, converte a string para double
+        double asNumber(const std::string &_token);
     public:
-        Token(const std::string &_char);
-        bool isOperator(const std::string &_char);
-        bool isNumber(const std::string &_char);
-        double asNumber(const std::string &_char);
-        std::tuple<std::string, int, bool> asOperator(const std::string &_char);
+        ///contrutores da classe
+        Token();
+        Token(const std::string &_token);
+        ///getters da classe
+        std::string getRecivedToken();
+        std::tuple<bool, bool> getTypeToken();
+        double getNumber();
+        ///setters da classe
+        void setRecivedToken(const std::string &_token);
+        void setTypeToken(bool typeOp, bool unary);
+        void setNumber(const double &_number);
+        ///metodos da classe
+        ///checa o token recebido e diz se ele é um numero
+        void checkToken();
 };
 
 #endif // TOKEN_H_INCLUDED

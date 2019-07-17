@@ -27,3 +27,7 @@ template <typename T> TStack<T>::~TStack(){
 template <typename T> bool TStack<T>::isempty(){
     return (Stack->getSize()==0);
 }
+
+template <typename T> void TStack<T>::printStack(){
+    Stack->printList();
+}

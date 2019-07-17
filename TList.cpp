@@ -71,7 +71,6 @@ template <typename T> void TList<T>::printList(){
         std::cout << "Lista Vazia!!" << std::endl;
     } else {
         TTie<T> *p = head;
-        std::cout << "Lista de " << getSize() << " Elementos: ";
         while(p != nullptr){
             std::cout << p->getInfo() << " ";
             p = p->getNext();

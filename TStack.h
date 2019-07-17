@@ -7,11 +7,19 @@ template <typename T> class TStack{
     private:
         TList<T>* Stack;
     public:
+        ///construtor da classe
         TStack();
+        ///coloca a informação na pilha
         void push(T _info);
+        ///remove o elemento do topo da pilha
         void pop();
+        ///consulta o elemento do topo da pilha
         void top();
+        ///verifica se a pilha está vazia
         bool isempty();
+        ///printa a pilha(debug)
+        void printStack();
+        ///implementar
         ~TStack();
 };
 

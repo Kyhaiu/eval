@@ -1,36 +1,73 @@
 #include "Token.h"
-#include <iostream>
 
-Token::Token(const std::string &_char){
-    operand = false;
-    int priority;
-    if(isOperator(_char)){
-        typeOp = asOperator(_char);
-        operand = false;
-    } else{
-        operand = true;
-    }
+Token::Token(){
+    setTypeToken(false, false);
+    setRecivedToken("");
 }
 
-bool Token::isOperator(const std::string &_char){
-    for(int i = 0; i < (int)tokens.size(); i++){
-        if(std::get<0>(tokens[i]) == _char){
+Token::Token(const std::string &_token){
+    setTypeToken(false, false);
+    setRecivedToken(_token);
+}
+
+bool Token::isUnary(const std::string &_token){
+    for(int i = 0; i < (int)operators.size(); i++){
+        if(std::get<0>(operators[i]) == _token && std::get<2>(operators[i]) == true){
             return true;
         }
     }
     return false;
 }
 
-double Token::asNumber(const std::string &_char){
-    double number =0.0;
-    number = std::stod(_char);
+bool Token::isOperator(const std::string &_token){
+    for(int i = 0; i < (int)operators.size(); i++){
+        if(std::get<0>(operators[i]) == _token){
+            return true;
+        }
+    }
+    return false;
+}
+
+double Token::asNumber(const std::string &_token){
+    double number = std::stod(_token);
     return number;
 }
 
-std::tuple<std::string, int, bool> Token::asOperator(const std::string &_char){
-    for(int i = 0; i < (int)tokens.size(); i++){
-        if(std::get<0>(tokens[i]) == _char){
-            return tokens[i];
+std::string Token::getRecivedToken(){
+    return receivedToken;
+}
+
+std::tuple<bool, bool> Token::getTypeToken(){
+    return typeToken;
+}
+double Token::getNumber(){
+    return number;
+}
+
+void Token::setRecivedToken(const std::string &_token){
+    receivedToken = _token;
+}
+
+void Token::setTypeToken(bool typeOp, bool unary){
+    std::get<0>(typeToken) = typeOp;
+    std::get<1>(typeToken) = unary;
+}
+
+void Token::setNumber(const double &_number){
+    number = _number;
+}
+
+void Token::checkToken(){
+    std::string _token = getRecivedToken();
+    if(isOperator(_token)){
+        if(isUnary(_token)){
+            setTypeToken(true, true);
+        } else{
+            setTypeToken(true, false);
         }
+    } else{
+        setTypeToken(false, false);
+        double _number = asNumber(_token);
+        setNumber(_number);
     }
 }

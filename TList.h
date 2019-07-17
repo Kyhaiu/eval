@@ -23,8 +23,11 @@ template <typename T> class TList{
         void setTail(TTie<T>* newTail);
         void updateSize(int newSize);
         ///metodos da classe
+        ///insere no começo da lista
         void setBegin(T &_info);
+        ///remove do começo da lista
         void removeBegin();
+        ///imprime os valores da lista
         void printList();
 };
 
