@@ -23,6 +23,8 @@ class Token{
         std::string receivedToken;
         ///variavel que armaena o tipo do token(1° parametro indica se é um operador ou operando, segundo parametro se é unário)
         std::tuple<bool, bool> typeToken;
+        ///caso o token recebido seja um operador, essa variavel armazena a sua prioridade
+        int priority;
         ///caso o token recebido seja um numero, essa variavel armazena seu valor
         double number;
         ///verifica se o operador é unario, consultando na constante "operators"
@@ -38,14 +40,17 @@ class Token{
         ///getters da classe
         std::string getRecivedToken();
         std::tuple<bool, bool> getTypeToken();
+        int getPriority(std::string _token = "");
         double getNumber();
         ///setters da classe
         void setRecivedToken(const std::string &_token);
         void setTypeToken(bool typeOp, bool unary);
+        void setPriority(int _priority);
         void setNumber(const double &_number);
         ///metodos da classe
         ///checa o token recebido e diz se ele é um numero
         void checkToken();
+        bool checkPriorityOperator(Token* token, std::string tokenInStack);
 };
 
 #endif // TOKEN_H_INCLUDED

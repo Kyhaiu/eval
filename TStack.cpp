@@ -14,10 +14,9 @@ template <typename T> void TStack<T>::pop(){
     Stack->removeBegin();
 }
 
-template <typename T> void TStack<T>::top(){
+template <typename T> T TStack<T>::top(){
     TTie<T> *aux = Stack->getHead();
-    aux->getInfo();
-    std::cout << "Top = " << aux->getInfo() << std::endl;
+    return aux->getInfo();
 }
 
 template <typename T> TStack<T>::~TStack(){

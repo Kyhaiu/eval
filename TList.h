@@ -13,7 +13,7 @@ template <typename T> class TList{
     public:
         ///contrutores da classe
         TList();
-        TList(TTie<T>* _head, TTie<T>* _tail, int &_size);
+        TList(TTie<T>* _head, TTie<T>* _tail);
         ///getters da classe
         TTie<T>* getHead();
         TTie<T>* getTail();

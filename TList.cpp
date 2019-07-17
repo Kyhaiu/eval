@@ -8,10 +8,10 @@ template <typename T> TList<T>::TList(){
     updateSize(0);
 }
 
-template <typename T> TList<T>::TList(TTie<T>* _head, TTie<T>* _tail, int &_size){
+template <typename T> TList<T>::TList(TTie<T>* _head, TTie<T>* _tail){
     setHead(_head);
     setTail(_tail);
-    updateSize(1);
+    updateSize(0);
 }
 
 template <typename T> TTie<T>* TList<T>::getHead(){
@@ -35,6 +35,9 @@ template <typename T> void TList<T>::setTail(TTie<T>* newTail){
 }
 
 template <typename T> void TList<T>::updateSize(int newSize){
+    if(newSize == 0){
+        Size = 0;
+    }
     Size =  Size + newSize;
 }
 

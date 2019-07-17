@@ -3,11 +3,13 @@
 Token::Token(){
     setTypeToken(false, false);
     setRecivedToken("");
+    setPriority(0);
 }
 
 Token::Token(const std::string &_token){
     setTypeToken(false, false);
     setRecivedToken(_token);
+    setPriority(0);
 }
 
 bool Token::isUnary(const std::string &_token){
@@ -40,6 +42,18 @@ std::string Token::getRecivedToken(){
 std::tuple<bool, bool> Token::getTypeToken(){
     return typeToken;
 }
+
+int Token::getPriority(std::string _token){
+    int i = 0;
+    while(std::get<1>(operators[i]) <= 4){
+        if(std::get<0>(operators[i]) == _token){
+            priority = std::get<1>(operators[i]);
+            return priority;
+        }
+        i++;
+    }
+}
+
 double Token::getNumber(){
     return number;
 }
@@ -51,6 +65,10 @@ void Token::setRecivedToken(const std::string &_token){
 void Token::setTypeToken(bool typeOp, bool unary){
     std::get<0>(typeToken) = typeOp;
     std::get<1>(typeToken) = unary;
+}
+
+void Token::setPriority(int _priority){
+    priority = _priority;
 }
 
 void Token::setNumber(const double &_number){
@@ -70,4 +88,14 @@ void Token::checkToken(){
         double _number = asNumber(_token);
         setNumber(_number);
     }
+}
+
+bool Token::checkPriorityOperator(Token* token, std::string tokenInStack){
+    int tokenInStackPriority = getPriority(tokenInStack);
+    int tokenCompared = token->getPriority(token->getRecivedToken());
+
+    if(tokenCompared < tokenInStackPriority){
+        return true;
+    }
+    return false;
 }

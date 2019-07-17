@@ -14,7 +14,7 @@ template <typename T> class TStack{
         ///remove o elemento do topo da pilha
         void pop();
         ///consulta o elemento do topo da pilha
-        void top();
+        T top();
         ///verifica se a pilha está vazia
         bool isempty();
         ///printa a pilha(debug)

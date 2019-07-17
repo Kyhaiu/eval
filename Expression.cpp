@@ -3,14 +3,14 @@
 
 Expression::Expression(){
     setExpression("");
-    stackOperand = nullptr;
+    stackReversePolish = nullptr;
     stackOperator = nullptr;
 }
 
 
 Expression::Expression(const std::string &_exp){
     setExpression(_exp);
-    stackOperand = createStack();
+    stackReversePolish = createStack();
     stackOperator = createStack();
 }
 
@@ -23,11 +23,11 @@ std::string Expression::getExpression(){
     return expression;
 }
 
-TStack<std::string>* Expression::getOperandStack(){
-    if(stackOperand == nullptr){
-        stackOperand = createStack();
+TStack<std::string>* Expression::getStackReversePolish(){
+    if(stackReversePolish == nullptr){
+        stackReversePolish = createStack();
     }
-    return stackOperand;
+    return stackReversePolish;
 }
 
 TStack<std::string>* Expression::getOperatorStack(){
@@ -41,10 +41,10 @@ void Expression::setExpression(const std::string &exp){
     expression = exp;
 }
 
-void Expression::StackOperand(const std::string &tkn){
-    TStack<std::string>* operandStack = getOperandStack();
-    operandStack->push(tkn);
-    operandStack->printStack();
+void Expression::StackReversePolish(const std::string &tkn){
+    TStack<std::string>* polishReverseStack = getStackReversePolish();
+    polishReverseStack->push(tkn);
+    polishReverseStack->printStack();
 }
 
 void Expression::StackOperator(const std::string &tkn){
@@ -56,6 +56,7 @@ void Expression::StackOperator(const std::string &tkn){
 void Expression::eval(std::string &exp){
     removeParenthesesAndSpaces(exp);
     int i = 0, j = 0;
+    std::string result;
     while(exp[i] != '\0'){
         j = findNextToken(exp, i);
         if(j == -1){
@@ -67,9 +68,18 @@ void Expression::eval(std::string &exp){
         Token* token = new Token(exp.substr(i, j));
         token->checkToken();
         if(std::get<0>(token->getTypeToken())){
-            StackOperator(token->getRecivedToken());
+            if(reversePolish(token)){
+                StackOperator(token->getRecivedToken());
+            } else{
+                //result = solving(token->getRecivedToken());
+                //StackReversePolish(result);
+                //result = "";
+                ///ta aqui, precisa pensar num jeito de resolver o tamanho da string, pq quando vc cria uma string vazia ele coloca
+                ///como 0 o tamanho dela, só que quando vc faz uma nova atribuição ele até coloca o valor, porem não atualiza o tamanho
+                ///e quando vc passa uma string na função, ele pega a quantidade de caracteres informado no tamanho da string ou seja 0
+            }
         } else{
-            StackOperand(token->getRecivedToken());
+            StackReversePolish(token->getRecivedToken());
         }
         delete token;
         i++;
@@ -78,16 +88,17 @@ void Expression::eval(std::string &exp){
 }
 
 int Expression::findNextToken(const std::string &exp, int i){
+    int j = 0;
     while(exp[i] != '\0'){
         if(separators.find(exp[i]) != -1){
-            i--;
-            return i;
+            return j;
         } else{
             i++;
+            j++;
         }
     }
-    i--;
-    return i;
+    j--;
+    return j;
 }
 
 void Expression::removeParenthesesAndSpaces(std::string &exp){
@@ -114,4 +125,16 @@ int Expression::countingParenthesesAndSpaces(std::string &exp){
         i++;
     }
     return j;
+}
+
+bool Expression::reversePolish(Token* token){
+    TStack<std::string>* operatorStack = getOperatorStack();
+    if(operatorStack->isempty()){
+        return true;
+    }
+    std::string operatorInStack = operatorStack->top();
+    if(token->checkPriorityOperator(token, operatorInStack)){
+        return true;
+    }
+    return false;
 }

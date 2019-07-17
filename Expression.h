@@ -12,7 +12,7 @@ class Expression{
         ///constante define os separadores entre os operandos
         const std::string separators = "+-*/^";
         ///pilha dos operandos
-        TStack<std::string>* stackOperand;
+        TStack<std::string>* stackReversePolish;
         ///pilha dos operadores(nessa pilha o Ordis pira)
         TStack<std::string>* stackOperator;
         ///cria as stacks caso elas não exitam
@@ -23,12 +23,12 @@ class Expression{
         Expression(const std::string &_exp);
         ///getters da classe
         std::string getExpression();
-        TStack<std::string>* getOperandStack();
+        TStack<std::string>* getStackReversePolish();
         TStack<std::string>* getOperatorStack();
         ///setters da classe
         void setExpression(const std::string &exp);
-        ///metodos que colocam o valor a pilha
-        void StackOperand(const std::string &tk);
+        ///metodos que colocam os valor na pilha
+        void StackReversePolish(const std::string &tk);
         void StackOperator(const std::string &tk);
         ///metodos da classe
         ///avaliador de expressões aritméticas
@@ -40,6 +40,8 @@ class Expression{
         void removeParenthesesAndSpaces(std::string &exp);
         ///conta os parenteses(usado na função de cima)
         int countingParenthesesAndSpaces(std::string &exp);
+        ///metodo usado para verificar a o peso dos operadores e então colocar na pilha
+        bool reversePolish(Token* token);
 };
 
 #endif // EXPRESSION_H_INCLUDED
