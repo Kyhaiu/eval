@@ -24,7 +24,6 @@ class Expression{
         ///construtores da classe
         Expression();
         Expression(const std::string &_exp);
-        Expression(const std::string _token, std::tuple<std::string, bool, bool> _previousTkn);
         ///getters da classe
         std::string getExpression();
         TStack<std::string>* getStackReversePolish();
@@ -42,10 +41,8 @@ class Expression{
         std::string TopReversePolish();
         std::string TopOperator();
         ///metodos da classe
-        ///função usada apenas para chamada remover os parenteses e chamar o eval
-        void solvingExpression(std::string &exp);
         ///avaliador de expressões aritméticas
-        void eval(std::string &exp, std::tuple<std::string, bool, bool> _previuosToken, std::string _token, int i);
+        void eval(std::string &exp);
         ///encontra o proximo separador e retorna o seu indice
         int findNextToken(const std::string &exp, int i);
         ///minha propria função replace

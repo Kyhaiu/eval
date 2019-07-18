@@ -1,6 +1,8 @@
 #include "Operations.h"
 #include <cmath>
 
+///classe contem as funções que o eval deve resolver
+
 double Operations::add(double a, double b){
     return a + b;
 }

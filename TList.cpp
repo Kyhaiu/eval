@@ -2,6 +2,8 @@
 #include "TTie.cpp"
 #include <iostream>
 
+///classe template da lista encadeada, usada somente para criar a pilha
+
 template <typename T> TList<T>::TList(){
     setHead(nullptr);
     setTail(nullptr);
