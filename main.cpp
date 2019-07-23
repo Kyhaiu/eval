@@ -2,7 +2,7 @@
 #include "Expression.h"
 
 int main(){
-        std::string e = "(1+2*3)";
+        std::string e = "-(-5+4/5-5)";
         Expression* exp = new Expression(e);
-        exp->solvingExpression(e);
+        exp->eval(e);
 }

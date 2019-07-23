@@ -22,6 +22,9 @@ double Operations::div(double a, double b){
 double Operations::pow(double a, double b){
     return std::pow(a, b);
 }
+double Operations::sqrt(double a){
+    return std::sqrt(a);
+}
 
 double Operations::abs(double a){
     return std::abs(a);

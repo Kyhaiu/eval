@@ -4,59 +4,37 @@
 #include "Token.h"
 #include "Operations.h"
 #include <string>
-#include <iostream>
+#include <tuple>
+#include <vector>
 #include <sstream>
+#include <iostream>
+#include <locale>
 
 class Expression{
     private:
-        ///variavel que armazena a expressão recebida
         std::string expression;
-        ///constante define os separadores entre os operandos
-        const std::string separators = "+-*/^";
-        std::tuple<std::string, bool, bool> previuosToken;
-        ///pilha dos operandos
-        TStack<std::string>* stackReversePolish;
-        ///pilha dos operadores(nessa pilha o Ordis pira)
-        TStack<std::string>* stackOperator;
-        ///cria as stacks caso elas não exitam
-        TStack<std::string>* createStack();
+        TStack<std::tuple<std::string, int, bool, bool, int>>* operatorStack;
+        TStack<std::tuple<std::string, int, bool, bool, int>>* operandStack;
+        TStack<std::tuple<std::string, int, bool, bool, int>>* reversePolishStack;
+        std::vector<std::tuple<std::string, int, bool, bool, int>> mapTokens;
     public:
-        ///construtores da classe
         Expression();
-        Expression(const std::string &_exp);
-        Expression(const std::string _token, std::tuple<std::string, bool, bool> _previousTkn);
+        Expression(std::string &exp);
         ///getters da classe
         std::string getExpression();
-        TStack<std::string>* getStackReversePolish();
-        TStack<std::string>* getOperatorStack();
-        std::tuple<std::string, bool, bool> getPreviousToken();
         ///setters da classe
-        void setPreviousToken(std::string _previousToken, bool _operand, bool _unary);
-        void setExpression(const std::string &exp);
-        ///metodos que colocam os valor na pilha
-        void StackReversePolish(const std::string &tk);
-        void StackOperator(const std::string &tk);
-        void PopReversePolish();
-        void PopOperator();
-        void PrintReversePolish();
-        std::string TopReversePolish();
-        std::string TopOperator();
+        void setExpression(std::string &exp);
+        ///metodos das pilhas
+        TStack<std::tuple<std::string, int, bool, bool, int>>* getStack(int op);
+        void pushStack(TStack<std::tuple<std::string, int, bool, bool, int>>* pointerStack, std::tuple<std::string, int, bool, bool, int> token);
+        void popStack(TStack<std::tuple<std::string, int, bool, bool, int>>* pointerStack);
+        std::tuple<std::string, int, bool, bool, int> topStack(TStack<std::tuple<std::string, int, bool, bool, int>>* pointerStack);
         ///metodos da classe
-        ///função usada apenas para chamada remover os parenteses e chamar o eval
-        void solvingExpression(std::string &exp);
-        ///avaliador de expressões aritméticas
-        void eval(std::string &exp, std::tuple<std::string, bool, bool> _previuosToken, std::string _token, int i);
-        ///encontra o proximo separador e retorna o seu indice
-        int findNextToken(const std::string &exp, int i);
-        ///minha propria função replace
-        ///remove os parenteses
-        void removeParenthesesAndSpaces(std::string &exp);
-        ///conta os parenteses(usado na função de cima)
-        int countingParenthesesAndSpaces(std::string &exp);
-        ///metodo usado para verificar a o peso dos operadores e então colocar na pilha
-        bool reversePolish(Token* token);
-        ///função que resolve a pilha que contem os valores na forma polonesa reversa
-        double solving(std::string _op, bool unary);
+        void eval(std::string &exp);
+        void reversePolish(std::vector<std::tuple<std::string, int, bool, bool, int>> mapTkn);
+        bool HigerPriority(int op1, int op2);
+        void solve(bool unary);
+        void removeSpaces(std::string &exp);
 };
 
 #endif // EXPRESSION_H_INCLUDED

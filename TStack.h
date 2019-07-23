@@ -16,7 +16,7 @@ template <typename T> class TStack{
         ///consulta o elemento do topo da pilha
         T top();
         ///verifica se a pilha está vazia
-        bool isempty();
+        bool isEmpty();
         ///printa a pilha(debug)
         void printStack();
         ///implementar

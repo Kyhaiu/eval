@@ -1,218 +1,176 @@
 #include "Expression.h"
 
-
 Expression::Expression(){
-    setExpression("");
-    stackReversePolish = nullptr;
-    stackOperator = nullptr;
+    std::string e = "";
+    setExpression(e);
+    operatorStack = nullptr;
+    operandStack = nullptr;
+    reversePolishStack = nullptr;
 }
 
-
-Expression::Expression(const std::string &_exp){
-    setExpression(_exp);
-    stackReversePolish = createStack();
-    stackOperator = createStack();
+Expression::Expression(std::string &exp){
+    setExpression(exp);
+    operatorStack = getStack(4);
+    operandStack = getStack(4);
+    reversePolishStack = getStack(4);
 }
 
-TStack<std::string>* Expression::createStack(){ /// cria a pilha
-    TStack<std::string>* Stack = new TStack<std::string>();
-    return Stack;
-}
-
-std::string Expression::getExpression(){ ///retorna a expressão digitada pelo usuário
+std::string Expression::getExpression(){
     return expression;
 }
 
-TStack<std::string>* Expression::getStackReversePolish(){ /// retorna a pilha da expressão na forma polonesa reversa
-    if(stackReversePolish == nullptr){
-        stackReversePolish = createStack();
-    }
-    return stackReversePolish;
-}
-
-TStack<std::string>* Expression::getOperatorStack(){ /// retorna a pilha dos operadores/funções
-    if(stackOperator == nullptr){
-        stackOperator = createStack();
-    }
-    return stackOperator;
-}
-
-std::tuple<std::string, bool, bool> Expression::getPreviousToken(){ ///retorna o token anterior
-    return previuosToken;
-}
-
-void Expression::setPreviousToken(std::string _previousToken, bool _operand, bool _unary){ /// seta o token anterior
-    std::get<0>(previuosToken) = _previousToken;
-    std::get<1>(previuosToken) = _operand;
-    std::get<2>(previuosToken) = _unary;
-}
-
-void Expression::setExpression(const std::string &exp){ ///seta a expressao que o usuario digitou
+void Expression::setExpression(std::string &exp){
     expression = exp;
 }
 
-void Expression::StackReversePolish(const std::string &tkn){///empilha os valores/operadores na pilha da polonesa reversa
-    TStack<std::string>* polishReverseStack = getStackReversePolish();
-    polishReverseStack->push(tkn);
+TStack<std::tuple<std::string, int, bool, bool, int>>* Expression::getStack(int op){
+    if(op == 1){
+        return operatorStack;
+    } else if(op == 2){
+        return operandStack;
+    } else if(op == 3){
+        return reversePolishStack;
+    } else if(op == 4){
+        TStack<std::tuple<std::string, int, bool, bool, int>>* s = new TStack<std::tuple<std::string, int, bool, bool, int>>();
+        return s;
+    }
+}
+
+void Expression::pushStack(TStack<std::tuple<std::string, int, bool, bool, int>>* pointerStack, std::tuple<std::string, int, bool, bool, int> token){
+    pointerStack->push(token);
+    //std::cout << std::get<0>(token) << " ";
+}
+
+void Expression::popStack(TStack<std::tuple<std::string, int, bool, bool, int>>* pointerStack){
+    std::cout << std::get<0>(topStack(pointerStack)) << " ";
+    pointerStack->pop();
+}
+
+std::tuple<std::string, int, bool, bool, int> Expression::topStack(TStack<std::tuple<std::string, int, bool, bool, int>>* pointerStack){
+    return pointerStack->top();
+}
+
+void Expression::eval(std::string &exp){
+    exp = "(" + exp + ")";
+    removeSpaces(exp);
+    Token* token = new Token(exp);
+    token->checkTokens();
+    mapTokens = token->getMapToken();
+    reversePolish(mapTokens);
+}
+
+void Expression::reversePolish(std::vector<std::tuple<std::string, int, bool, bool, int>> mapTkn){
+
+    int l = mapTkn.size();
+    for (int i = 0; i < l; i++){
+        if(std::get<2>(mapTkn[i])){
+            if(std::get<0>(mapTkn[i]) == "("){
+                pushStack(getStack(1), mapTkn[i]);
+            } else if(std::get<0>(mapTkn[i]) == ")"){
+                while(std::get<0>(topStack(getStack(1))) != "("){
+                    pushStack(getStack(2), topStack(getStack(1)));
+                    popStack(getStack(1));
+                }
+                popStack(getStack(1));
+            } else if(std::get<2>(mapTkn[i])){
+                while(HigerPriority(std::get<1>(mapTkn[i]), std::get<1>(topStack(getStack(1))))){
+                    pushStack(getStack(2), topStack(getStack(1)));
+                    popStack(getStack(1));
+                }
+                pushStack(getStack(1), mapTkn[i]);
+            }
+        } else {///caso for numero
+            pushStack(getStack(2), mapTkn[i]);
+        }
+    }
+    std::cout << std::endl;
     system("cls");
+
+	while(!getStack(2)->isEmpty()) {
+		popStack(getStack(2));
+	}
+	system("pause");
 }
 
-void Expression::StackOperator(const std::string &tkn){/// empilha os operadores na pilha deles
-    TStack<std::string>* operatorStack = getOperatorStack();
-    operatorStack->push(tkn);
-    system("cls");
-}
-
-void Expression::PopReversePolish(){ /// remove do topo da pilha da polonesa reversa
-    TStack<std::string>* polishReverseStack = getStackReversePolish();
-    polishReverseStack->pop();
-}
-
-void Expression::PopOperator(){ /// remove da pilha dos operadores
-    TStack<std::string>* operatorStack = getOperatorStack();
-    operatorStack->pop();
-}
-
-void Expression::PrintReversePolish(){///printa a pilha da polonesa reversa(teste/debug)
-    TStack<std::string>* polishReverseStack = getStackReversePolish();
-    system("cls");
-    polishReverseStack->printStack();
-}
-
-std::string Expression::TopReversePolish(){///consulta o topo da pilha da poloesa reversa
-    TStack<std::string>* polishReverseStack = getStackReversePolish();
-    return polishReverseStack->top();
-}
-
-std::string Expression::TopOperator(){///consulta o topo da pilha dos operadores
-    TStack<std::string>* operatorStack = getOperatorStack();
-    return operatorStack->top();
-}
-
-void Expression::solvingExpression(std::string &exp){///função chamada no main
-    removeParenthesesAndSpaces(exp);
-    /*std::ostringstream result;
-    double aux = 0.0;
-    result << aux;
-    std::string str = result.str();*/
-    int aux = findNextToken(exp, 0);
-    std::string _token = exp.substr(0, aux);
-    eval(exp, getPreviousToken(), _token, aux+1);
-}
-
-///a inteção dessa função recursiva é ir percorrendo até achar um caso onde viole a polonesa reversa(ou final de string, mas o segundo caso falta implementar, e to com mto sono) ou quando achar um menos unário
-void Expression::eval(std::string &exp, std::tuple<std::string, bool, bool> _previuosToken, std::string _token, int i){
-    Token* token = new Token(_token);
-    token->checkToken();
-    if(std::get<1>(_previuosToken) == true && _token == "-"){ ///caso o token anterior for um operador e o token atual seja um -, isso significa que é um menos unario
-
-    } else if(std::get<1>(_previuosToken) == true && std::get<1>(token->getTypeToken()) == true){ /// significa que é uma função unária(sqrt, log, tan, ...)
-
-    } else if(std::get<0>(token->getTypeToken()) == true){///caso o token atual seja um operador
-        if(token->checkPriorityOperator(token, std::get<0>(_previuosToken))){ /// violou a polonesa reversa, então precisa resolver
-
-        } else{
-            StackOperator(_token); /// empilha o operador
-        }
-    } else if(std::get<0>(token->getTypeToken()) == false){///caso o token atual seja um numero
-        StackReversePolish(_token);
-    }
-    ///monta a tuple do token anterior
-    std::tuple<std::string, bool, bool> prevTk = {_token, std::get<0>(token->getTypeToken()), std::get<1>(token->getTypeToken())};
-    int aux = findNextToken(exp, 0); ///procura o proximo token
-    eval(exp, prevTk, exp.substr(i, aux), i+1); ///chama de novo
-}
-
-int Expression::findNextToken(const std::string &exp, int i){///função procura o indice do proximo token
-    int j = 0;
-    while(exp[i] != '\0'){
-        if(separators.find(exp[i]) != -1){
-            return j;
-        } else{
-            i++;
-            j++;
-        }
-    }
-    j--;
-    return j;
-}
-
-void Expression::removeParenthesesAndSpaces(std::string &exp){///remove parenteses e espaços
-    int i = 0, j = 0;
-    std::string aux;
-    aux.resize(countingParenthesesAndSpaces(exp));
-    while(exp[i] != '\0'){
-        if(exp[i] != ' ' && exp[i] != '(' && exp[i] != ')'){
-            aux[j] = exp[i];
-            j++;
-        }
-        i++;
-    }
-    exp.resize(aux.size());
-    exp = aux;
-}
-
-int Expression::countingParenthesesAndSpaces(std::string &exp){///função só é usada na função acima para remover os espaços, ela basicamente conta o tamanho da string sem os parenteses e espaços
-    int i = 0,  j = 0;
-    while(exp[i] != '\0'){
-        if(exp[i] != ' ' && exp[i] != '(' && exp[i] != ')'){
-            j++;
-        }
-        i++;
-    }
-    return j;
-}
-
-bool Expression::reversePolish(Token* token){///checa se violou a regra da polonesa reversa(reformular)
-    ///para violar a polonesa reversa, é preciso tentar empilhar um operador com menor prioridade na pilha, ou acabar a string
-    TStack<std::string>* operatorStack = getOperatorStack();
-    if(operatorStack->isempty()){
-        return true;
-    }
-    std::string operatorInStack = operatorStack->top();
-    if(token->checkPriorityOperator(token, operatorInStack)){
+bool Expression::HigerPriority(int op1, int op2){
+    if(op1 <= op2){
         return true;
     }
     return false;
 }
 
-double Expression::solving(std::string _op, bool unary){///função que resolve depois de ter colocado na forma polonesa reversa(reformular talvez)
-    Operations* operation = new Operations();
-    double a = 0.0, b = 0.0;
+void Expression::solve(bool unary){
+    std::string tk = std::get<0>(topStack(getStack(1)));
+    Operations* op = new Operations();
+    double result = 0.0, a = 0.0, b = 0.0, c = 0.0;
 
-    if(_op == "+"){
-        a = std::stod(TopReversePolish());
-        PopReversePolish();
-        b = std::stod(TopReversePolish());
-        PopReversePolish();
-        return operation->add(a, b);
-    } else if(_op == "-"){
-        a = std::stod(TopReversePolish());
-        PopReversePolish();
-        b = std::stod(TopReversePolish());
-        PopReversePolish();
-        return operation->sub(a, b);
-    } else if(unary == true){///caso seja o - unário
-        a = std::stod(_op);
-        b = -1;
-        return operation->mul(a, b);
-    } else if(_op == "*"){
-        a = std::stod(TopReversePolish());
-        PopReversePolish();
-        b = std::stod(TopReversePolish());
-        PopReversePolish();
-        return operation->mul(a, b);
-    } else if(_op == "/"){
-        a = std::stod(TopReversePolish());
-        PopReversePolish();
-        b = std::stod(TopReversePolish());
-        PopReversePolish();
-        return operation->div(a, b);
-    } else if(_op == "^"){
-        a = std::stod(TopReversePolish());
-        PopReversePolish();
-        b = std::stod(TopReversePolish());
-        PopReversePolish();
-        return operation->pow(a, b);
+
+    if(unary){
+        c = std::stod(std::get<0>(topStack(getStack(2))));
+        popStack(getStack(2));
+    } else{
+        a = std::stod(std::get<0>(topStack(getStack(2))));
+        popStack(getStack(2));
+        b = std::stod(std::get<0>(topStack(getStack(2))));
+        popStack(getStack(2));
     }
+
+    if(tk == "+"){
+        result = op->add(a, b);
+    } else if(tk == "-"){
+        result = op->sub(a, b);
+    } else if(tk == "*"){
+        result = op->mul(a, b);
+    } else if(tk == "/"){
+        result = op->div(a, b);
+    } else if(tk == "^"){
+        result = op->pow(a, b);
+    } else if(tk == "sqrt"){
+        //resultop->sqrt(c);
+    } else if(tk == "abs"){
+        result = op->abs(c);
+    } else if(tk == "log"){
+        result = op->log(c);
+    } else if(tk == "sin"){
+        result = op->sin(c);
+    } else if(tk == "cos"){
+        result = op->cos(c);
+    } else if(tk == "tan"){
+        result = op->tan(c);
+    }
+    std::tuple<std::string, int, bool, bool, int> r;
+
+    std::ostringstream aux;
+    aux << result;
+    std::string str = aux.str();
+
+    std::get<0>(r) = str;
+    std::get<1>(r) = 0;
+    std::get<2>(r) = false;
+    std::get<3>(r) = false;
+    std::get<4>(r) = 0;
+    pushStack(getStack(3), r);
+    popStack(getStack(1));
+}
+
+void Expression::removeSpaces(std::string &exp){
+    int i = 0, j = 0, k = 0;
+    while(exp[i] != '\0'){
+        if(exp[i] != ' '){
+            j++;
+        }
+        i++;
+    }
+    std::string aux;
+    aux.resize(j);
+    i = 0;
+    while(exp[i] != '\0'){
+        if(exp[i] != ' '){
+            aux[k] = exp[i];
+            k++;
+        }
+        i++;
+    }
+    exp.resize(j);
+    exp = aux;
 }

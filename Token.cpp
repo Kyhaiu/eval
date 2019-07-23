@@ -1,86 +1,138 @@
 #include "Token.h"
 
 Token::Token(){
-    setTypeToken(false, false);
-    setRecivedToken("");
-    setPriority(0);
+    expression = "";
 }
 
-Token::Token(const std::string &_token){
-    setTypeToken(false, false);
-    setRecivedToken(_token);
-    setPriority(0);
+Token::Token(std::string &exp){
+    expression = exp;
 }
 
-bool Token::isUnary(const std::string &_token){///verifica se o operador é unário
-    for(int i = 0; i < (int)operators.size(); i++){
-        if(std::get<0>(operators[i]) == _token && std::get<2>(operators[i]) == true){
-            return true;
-        }
-    }
-    return false;
+std::string Token::getExpression(){
+    return expression;
 }
 
-bool Token::isOperator(const std::string &_token){///verifica se é um operador aritimético/função
-    for(int i = 0; i < (int)operators.size(); i++){
-        if(std::get<0>(operators[i]) == _token){
-            return true;
-        }
-    }
-    return false;
+std::tuple<std::string, int, bool, bool, int> Token::getToken(int i){
+    return tkns[i];
 }
 
-std::string Token::getRecivedToken(){
-    return receivedToken;
+std::vector<std::tuple<std::string, int, bool, bool, int>>& Token::getMapToken(){
+    return tkns;
 }
 
-std::tuple<bool, bool> Token::getTypeToken(){
-    return typeToken;
-}
-
-int Token::getPriority(std::string _token){///procura na constante operators a prioridade do operador e retorna ela
+int Token::getPriority(std::string &tk){
     int i = 0;
-    while(std::get<1>(operators[i]) <= 4){
-        if(std::get<0>(operators[i]) == _token){
-            priority = std::get<1>(operators[i]);
+    while(tk != std::get<0>(operations[i])){
+        i++;
+    }
+    return std::get<1>(operations[i]);
+}
+
+void Token::setToken(std::tuple<std::string, int, bool, bool, int> _tkns, int j){
+    int i = 0;
+    for(i; i < j; i++){}
+    tkns.push_back(_tkns);
+}
+
+std::string Token::findNextToken(std::string exp, int &i){
+    int j = i, k = 0;
+    while(exp[j] != '\0'){
+        if(separators.find(exp[j]) != std::string::npos){
+            j--;
+            break;
+        }
+        if(isFunction(exp, j)){
+            if(exp[j+1] == 'q'){
+                k = 4;
+                j = j + k-1;
+                break;
+            } else{
+                k = 3;
+                j = j + k-1;
+                break;
+            }
+        }
+        j++;
+        k++;
+    }
+    if(k == 0){
+        k++;
+    }
+    std::string tk = exp.substr(i, k);
+    if(i == j){
+        j++;
+    } else if(i > j){
+        j = j + 2;
+    } else{
+        j++;
+    }
+    i = j;
+    return tk;
+}
+
+bool Token::isUnary(std::string tk){
+    int i = 0;
+    while(std::get<0>(operations[i]) != tk){
+        i++;
+    }
+    return std::get<3>(operations[i]);
+}
+
+bool Token::isOperator(std::string tk){
+    int i = 0;
+    while(i < operations.size()){
+        if(std::get<0>(operations[i]) == tk){
+            return true;
         }
         i++;
     }
-    return priority;
+    return false;
 }
 
-void Token::setRecivedToken(const std::string &_token){
-    receivedToken = _token;
+bool Token::isVariable(std::string tk){
+    return false;
 }
 
-void Token::setTypeToken(bool typeOp, bool unary){
-    std::get<0>(typeToken) = typeOp;///1° paremetro indica se é numero ou função(true pra função, false pra numero)
-    std::get<1>(typeToken) = unary;///2° parametro indica se é unario ou nao
-}
-
-void Token::setPriority(int _priority){
-    priority = _priority;
-}
-
-void Token::checkToken(){///checa o token e seta o tipo(se é numero ou função e se é unario ou não)
-    std::string _token = getRecivedToken();
-    if(isOperator(_token)){
-        if(isUnary(_token)){
-            setTypeToken(true, true); ///função unária(sqrt,sin, cos, tan,...)
-        } else{
-            setTypeToken(true, false); ///operadores aritiméticos e função ^(potencia)
-        }
-    } else{
-        setTypeToken(false, false); ///numero normal
-    }
-}
-
-bool Token::checkPriorityOperator(Token* token, std::string tokenInStack){///verifica se a prioridade de um operador aritimético é maior do que a outra(usado na função pra verificar se viola a polonesa reversa)
-    int tokenInStackPriority = getPriority(tokenInStack);
-    int tokenCompared = token->getPriority(token->getRecivedToken());
-
-    if(tokenCompared < tokenInStackPriority){
+bool Token::isFunction(std::string exp, int i){
+    std::string functions = "sqrtabslogsincostan";
+    if(functions.find(exp.substr(i, 4)) != -1 || functions.find(exp.substr(i, 3)) != -1){
         return true;
     }
     return false;
+}
+
+void Token::checkTokens(){
+    std::string exp = getExpression();
+    std::string tk = "";
+    std::tuple<std::string, int, bool, bool, int> tkn;
+    int i = 0, j = 0;
+    while(exp[i] != '\0'){
+        tk = findNextToken(exp, i);
+        if(tk == "(" || tk == ")"){
+            std::get<0>(tkn) = tk;
+            std::get<1>(tkn) = 0;
+            std::get<2>(tkn) = true;
+            std::get<3>(tkn) = true;
+            std::get<4>(tkn) = 0;
+        } else{
+            std::get<0>(tkn) = tk;
+            if(isOperator(tk)){
+                std::get<1>(tkn) = getPriority(tk);
+                std::get<2>(tkn) = true;
+                if(isUnary(tk)){
+                    std::get<3>(tkn) = true;
+                } else{
+                    std::get<3>(tkn) = false;
+                }
+            } else{
+                std::get<1>(tkn) = 0;
+                std::get<2>(tkn) = false;
+                ///resolver aqui se o menos é unario, pegando o ultimo operador no map e vendo se ele é uma função
+                std::get<3>(tkn) = false;
+            }
+        }
+        std::get<4>(tkn) = i;
+        setToken(tkn, j);
+        j++;
+    }
 }

@@ -23,7 +23,7 @@ template <typename T> TStack<T>::~TStack(){
     delete Stack;
 }
 
-template <typename T> bool TStack<T>::isempty(){
+template <typename T> bool TStack<T>::isEmpty(){
     return (Stack->getSize()==0);
 }
 
