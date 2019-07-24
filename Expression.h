@@ -8,7 +8,7 @@
 #include <vector>
 #include <sstream>
 #include <iostream>
-#include <locale>
+#include <regex>
 
 class Expression{
     private:
@@ -33,8 +33,9 @@ class Expression{
         void eval(std::string &exp);
         void reversePolish(std::vector<std::tuple<std::string, int, bool, bool, int>> mapTkn);
         bool HigerPriority(int op1, int op2);
-        void solve(bool unary);
+        void solve();
         void removeSpaces(std::string &exp);
+        void removeVariables(std::string &exp);
 };
 
 #endif // EXPRESSION_H_INCLUDED

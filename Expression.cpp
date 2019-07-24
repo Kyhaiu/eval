@@ -52,6 +52,7 @@ std::tuple<std::string, int, bool, bool, int> Expression::topStack(TStack<std::t
 
 void Expression::eval(std::string &exp){
     exp = "(" + exp + ")";
+    removeVariables(exp);
     removeSpaces(exp);
     Token* token = new Token(exp);
     token->checkTokens();
@@ -99,13 +100,14 @@ bool Expression::HigerPriority(int op1, int op2){
     return false;
 }
 
-void Expression::solve(bool unary){
-    std::string tk = std::get<0>(topStack(getStack(1)));
+void Expression::solve(){
+    std::tuple<std::string, int, bool, bool, int> tkn = topStack(getStack(1));
+    std::string tk = std::get<0>(tkn);
     Operations* op = new Operations();
     double result = 0.0, a = 0.0, b = 0.0, c = 0.0;
 
 
-    if(unary){
+    if(std::get<3>(tkn)){
         c = std::stod(std::get<0>(topStack(getStack(2))));
         popStack(getStack(2));
     } else{
@@ -173,4 +175,28 @@ void Expression::removeSpaces(std::string &exp){
     }
     exp.resize(j);
     exp = aux;
+}
+
+void Expression::removeVariables(std::string &exp){
+    int i = 0;
+    std::regex e("[A-Z]");
+    std::smatch m;
+    while(exp[i] != '\0'){
+        std::string newExp, variable;
+        std::string temp = exp.substr(i, 1);
+        if(exp.substr(i, 2) == "PI"){
+            newExp = exp.substr(0, i) + "3.1415926535898" + exp.substr(i+2, exp.size());
+            exp = newExp;
+            newExp = "";
+            i = i + 14;
+        } else if(std::regex_search(temp ,m,e)){
+            std::cout << "Informe o valor da variavel 0 " << exp[i] << ": ";
+            std::cin >> variable;
+            newExp = exp.substr(0, i) + variable + exp.substr(i+1, exp.size());
+            exp = newExp;
+            variable = "";
+            continue;
+        }
+        i++;
+    }
 }
