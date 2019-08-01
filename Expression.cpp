@@ -23,7 +23,7 @@ void Expression::setExpression(std::string &exp){
     expression = exp;
 }
 
-TStack<std::tuple<std::string, int, bool, bool, int>>* Expression::getStack(int op){
+TStack<std::tuple<std::string, int, bool, bool>>* Expression::getStack(int op){
     if(op == 1){
         return operatorStack;
     } else if(op == 2){
@@ -31,22 +31,23 @@ TStack<std::tuple<std::string, int, bool, bool, int>>* Expression::getStack(int 
     } else if(op == 3){
         return reversePolishStack;
     } else if(op == 4){
-        TStack<std::tuple<std::string, int, bool, bool, int>>* s = new TStack<std::tuple<std::string, int, bool, bool, int>>();
+        TStack<std::tuple<std::string, int, bool, bool>>* s = new TStack<std::tuple<std::string, int, bool, bool>>();
         return s;
     }
+    return nullptr; //apenas para tirar o warning
 }
 
-void Expression::pushStack(TStack<std::tuple<std::string, int, bool, bool, int>>* pointerStack, std::tuple<std::string, int, bool, bool, int> token){
+void Expression::pushStack(TStack<std::tuple<std::string, int, bool, bool>>* pointerStack, std::tuple<std::string, int, bool, bool> token){
     pointerStack->push(token);
     //std::cout << std::get<0>(token) << " ";
 }
 
-void Expression::popStack(TStack<std::tuple<std::string, int, bool, bool, int>>* pointerStack){
-    std::cout << std::get<0>(topStack(pointerStack)) << " ";
+void Expression::popStack(TStack<std::tuple<std::string, int, bool, bool>>* pointerStack){
+    std::cout << std::get<0>(topStack(pointerStack)) << " " << std::flush;
     pointerStack->pop();
 }
 
-std::tuple<std::string, int, bool, bool, int> Expression::topStack(TStack<std::tuple<std::string, int, bool, bool, int>>* pointerStack){
+std::tuple<std::string, int, bool, bool> Expression::topStack(TStack<std::tuple<std::string, int, bool, bool>>* pointerStack){
     return pointerStack->top();
 }
 
@@ -57,13 +58,14 @@ void Expression::eval(std::string &exp){
     Token* token = new Token(exp);
     token->checkTokens();
     mapTokens = token->getMapToken();
+    system("cls");
+    for(int i = 0; i < mapTokens.size(); i++)
+        std::cout << std::get<0>(mapTokens[i]) << " ";
     reversePolish(mapTokens);
 }
 
-void Expression::reversePolish(std::vector<std::tuple<std::string, int, bool, bool, int>> mapTkn){
-
-    int l = mapTkn.size();
-    for (int i = 0; i < l; i++){
+void Expression::reversePolish(std::vector<std::tuple<std::string, int, bool, bool>> mapTkn){
+    for (int i = 0; i < (int)mapTkn.size(); i++){
         if(std::get<2>(mapTkn[i])){
             if(std::get<0>(mapTkn[i]) == "("){
                 pushStack(getStack(1), mapTkn[i]);
@@ -86,7 +88,6 @@ void Expression::reversePolish(std::vector<std::tuple<std::string, int, bool, bo
     }
     std::cout << std::endl;
     system("cls");
-
 	while(!getStack(2)->isEmpty()) {
 		popStack(getStack(2));
 	}
@@ -101,7 +102,7 @@ bool Expression::HigerPriority(int op1, int op2){
 }
 
 void Expression::solve(){
-    std::tuple<std::string, int, bool, bool, int> tkn = topStack(getStack(1));
+    std::tuple<std::string, int, bool, bool> tkn = topStack(getStack(1));
     std::string tk = std::get<0>(tkn);
     Operations* op = new Operations();
     double result = 0.0, a = 0.0, b = 0.0, c = 0.0;
@@ -140,7 +141,7 @@ void Expression::solve(){
     } else if(tk == "tan"){
         result = op->tan(c);
     }
-    std::tuple<std::string, int, bool, bool, int> r;
+    std::tuple<std::string, int, bool, bool> r;
 
     std::ostringstream aux;
     aux << result;
@@ -150,7 +151,6 @@ void Expression::solve(){
     std::get<1>(r) = 0;
     std::get<2>(r) = false;
     std::get<3>(r) = false;
-    std::get<4>(r) = 0;
     pushStack(getStack(3), r);
     popStack(getStack(1));
 }
