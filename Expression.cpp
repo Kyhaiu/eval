@@ -59,7 +59,7 @@ void Expression::eval(std::string &exp){
     token->checkTokens();
     mapTokens = token->getMapToken();
     system("cls");
-    for(int i = 0; i < mapTokens.size(); i++)
+    for(int i = 0; i < (int)mapTokens.size(); i++)
         std::cout << std::get<0>(mapTokens[i]) << " ";
     reversePolish(mapTokens);
 }
@@ -89,9 +89,11 @@ void Expression::reversePolish(std::vector<std::tuple<std::string, int, bool, bo
     std::cout << std::endl;
     system("cls");
 	while(!getStack(2)->isEmpty()) {
+		pushStack(getStack(3), getStack(2)->top());
 		popStack(getStack(2));
 	}
 	system("pause");
+    solve();
 }
 
 bool Expression::HigerPriority(int op1, int op2){
@@ -102,57 +104,129 @@ bool Expression::HigerPriority(int op1, int op2){
 }
 
 void Expression::solve(){
-    std::tuple<std::string, int, bool, bool> tkn = topStack(getStack(1));
-    std::string tk = std::get<0>(tkn);
-    Operations* op = new Operations();
-    double result = 0.0, a = 0.0, b = 0.0, c = 0.0;
-
-
-    if(std::get<3>(tkn)){
-        c = std::stod(std::get<0>(topStack(getStack(2))));
-        popStack(getStack(2));
-    } else{
-        a = std::stod(std::get<0>(topStack(getStack(2))));
-        popStack(getStack(2));
-        b = std::stod(std::get<0>(topStack(getStack(2))));
-        popStack(getStack(2));
+    system("cls");
+    double num1, num2;
+    std::tuple<std::string, int, bool, bool> aux;
+    while(!getStack(3)->isEmpty()){
+        if(!std::get<2>(getStack(3)->top())){
+            pushStack(getStack(2), getStack(3)->top());
+            popStack(getStack(3));
+        }else{
+            if(std::get<0>(getStack(3)->top()) == "+"){
+                num2 = std::stod(std::get<0>(topStack(getStack(2))));
+                popStack(getStack(2));
+                num1 = std::stod(std::get<0>(topStack(getStack(2))));
+                popStack(getStack(2));
+                std::get<0>(aux) = std::to_string(Operations::add(num1, num2));
+                std::get<2>(aux) = 0;
+                std::get<2>(aux) = false;
+                std::get<2>(aux) = false;
+                popStack(getStack(3));
+                pushStack(getStack(2), aux);
+            } else if(std::get<0>(getStack(3)->top()) == "-"){
+                num2 = std::stod(std::get<0>(topStack(getStack(2))));
+                popStack(getStack(2));
+                num1 = std::stod(std::get<0>(topStack(getStack(2))));
+                popStack(getStack(2));
+                std::get<0>(aux) = std::to_string(Operations::sub(num1, num2));
+                std::get<2>(aux) = 0;
+                std::get<2>(aux) = false;
+                std::get<2>(aux) = false;
+                popStack(getStack(3));
+                pushStack(getStack(2), aux);
+            } else if(std::get<0>(getStack(3)->top()) == "*"){
+                num2 = std::stod(std::get<0>(topStack(getStack(2))));
+                popStack(getStack(2));
+                num1 = std::stod(std::get<0>(topStack(getStack(2))));
+                popStack(getStack(2));
+                std::get<0>(aux) = std::to_string(Operations::mul(num1, num2));
+                std::get<2>(aux) = 0;
+                std::get<2>(aux) = false;
+                std::get<2>(aux) = false;
+                popStack(getStack(3));
+                pushStack(getStack(2), aux);
+            } else if(std::get<0>(getStack(3)->top()) == "/"){
+                num2 = std::stod(std::get<0>(topStack(getStack(2))));
+                popStack(getStack(2));
+                num1 = std::stod(std::get<0>(topStack(getStack(2))));
+                popStack(getStack(2));
+                std::get<0>(aux) = std::to_string(Operations::div(num1, num2));
+                std::get<2>(aux) = 0;
+                std::get<2>(aux) = false;
+                std::get<2>(aux) = false;
+                popStack(getStack(3));
+                pushStack(getStack(2), aux);
+            } else if(std::get<0>(getStack(3)->top()) == "^"){
+                num2 = std::stod(std::get<0>(topStack(getStack(2))));
+                popStack(getStack(2));
+                num1 = std::stod(std::get<0>(topStack(getStack(2))));
+                popStack(getStack(2));
+                std::get<0>(aux) = std::to_string(Operations::pow(num1, num2));
+                std::get<2>(aux) = 0;
+                std::get<2>(aux) = false;
+                std::get<2>(aux) = false;
+                popStack(getStack(3));
+                pushStack(getStack(2), aux);
+            } else if(std::get<0>(getStack(3)->top()) == "sqrt"){
+                num1 = std::stod(std::get<0>(topStack(getStack(2))));
+                popStack(getStack(2));
+                std::get<0>(aux) = std::to_string(Operations::sqrt(num1));
+                std::get<2>(aux) = 0;
+                std::get<2>(aux) = false;
+                std::get<2>(aux) = false;
+                popStack(getStack(3));
+                pushStack(getStack(2), aux);
+            } else if(std::get<0>(getStack(3)->top()) == "log"){
+                num1 = std::stod(std::get<0>(topStack(getStack(2))));
+                popStack(getStack(2));
+                std::get<0>(aux) = std::to_string(Operations::log(num1));
+                std::get<2>(aux) = 0;
+                std::get<2>(aux) = false;
+                std::get<2>(aux) = false;
+                popStack(getStack(3));
+                pushStack(getStack(2), aux);
+            } else if(std::get<0>(getStack(3)->top()) == "abs"){
+                num1 = std::stod(std::get<0>(topStack(getStack(2))));
+                popStack(getStack(2));
+                std::get<0>(aux) = std::to_string(Operations::abs(num1));
+                std::get<2>(aux) = 0;
+                std::get<2>(aux) = false;
+                std::get<2>(aux) = false;
+                popStack(getStack(3));
+                pushStack(getStack(2), aux);
+            } else if(std::get<0>(getStack(3)->top()) == "sen"){
+                num1 = std::stod(std::get<0>(topStack(getStack(2))));
+                popStack(getStack(2));
+                std::get<0>(aux) = std::to_string(Operations::sin(num1));
+                std::get<2>(aux) = 0;
+                std::get<2>(aux) = false;
+                std::get<2>(aux) = false;
+                popStack(getStack(3));
+                pushStack(getStack(2), aux);
+            } else if(std::get<0>(getStack(3)->top()) == "cos"){
+                num1 = std::stod(std::get<0>(topStack(getStack(2))));
+                popStack(getStack(2));
+                std::get<0>(aux) = std::to_string(Operations::cos(num1));
+                std::get<2>(aux) = 0;
+                std::get<2>(aux) = false;
+                std::get<2>(aux) = false;
+                popStack(getStack(3));
+                pushStack(getStack(2), aux);
+            } else if(std::get<0>(getStack(3)->top()) == "tan"){
+                num1 = std::stod(std::get<0>(topStack(getStack(2))));
+                popStack(getStack(2));
+                std::get<0>(aux) = std::to_string(Operations::tan(num1));
+                std::get<2>(aux) = 0;
+                std::get<2>(aux) = false;
+                std::get<2>(aux) = false;
+                popStack(getStack(3));
+                pushStack(getStack(2), aux);
+            }
+        }
     }
-
-    if(tk == "+"){
-        result = op->add(a, b);
-    } else if(tk == "-"){
-        result = op->sub(a, b);
-    } else if(tk == "*"){
-        result = op->mul(a, b);
-    } else if(tk == "/"){
-        result = op->div(a, b);
-    } else if(tk == "^"){
-        result = op->pow(a, b);
-    } else if(tk == "sqrt"){
-        //resultop->sqrt(c);
-    } else if(tk == "abs"){
-        result = op->abs(c);
-    } else if(tk == "log"){
-        result = op->log(c);
-    } else if(tk == "sin"){
-        result = op->sin(c);
-    } else if(tk == "cos"){
-        result = op->cos(c);
-    } else if(tk == "tan"){
-        result = op->tan(c);
-    }
-    std::tuple<std::string, int, bool, bool> r;
-
-    std::ostringstream aux;
-    aux << result;
-    std::string str = aux.str();
-
-    std::get<0>(r) = str;
-    std::get<1>(r) = 0;
-    std::get<2>(r) = false;
-    std::get<3>(r) = false;
-    pushStack(getStack(3), r);
-    popStack(getStack(1));
+    system("cls");
+    popStack(getStack(2));
+    system("pause");
 }
 
 void Expression::removeSpaces(std::string &exp){

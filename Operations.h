@@ -1,8 +1,7 @@
 #ifndef OPERATIONS_H_INCLUDED
 #define OPERATIONS_H_INCLUDED
 
-class Operations{
-    public:
+namespace Operations{
         ///operassões que o avaliador suporta
         double add(double a, double b);
         double sub(double a, double b);
