@@ -33,12 +33,20 @@ void Token::setToken(std::tuple<std::string, int, bool, bool> _tkns){
 }
 
 std::string Token::findNextToken(std::string exp, int &i){
-    int j = i, k = 0;
+    int j = i, k = 0, aux = 0;
     while(exp[j] != '\0'){
-        if(separators.find(exp[j]) != std::string::npos){
-            j--;
+        while(aux <= 5){
+            if(exp.substr(j,1) == std::get<0>(operations[aux]) || exp.substr(j,1) == "(" || exp.substr(j,1) == ")"){
+                j--;
+                aux = -1;
+                break;
+            }
+            aux++;
+        }
+        if(aux == -1){
             break;
         }
+        aux = 0;
         if(isFunction(exp, j)){
             if(exp[j+1] == 'q'){
                 k = 4;
@@ -92,9 +100,12 @@ bool Token::isVariable(std::string tk){
 }
 
 bool Token::isFunction(std::string exp, int i){
-    std::string functions = "sqrtabslogsincostan";
-    if(functions.find(exp.substr(i, 4)) != std::string::npos || functions.find(exp.substr(i, 3)) != std::string::npos){
-        return true;
+    int j = 5;
+    while(j <= (int)operations.size()){
+        if(std::get<0>(operations[j]) == exp.substr(i, 4) || std::get<0>(operations[j]) == exp.substr(i, 3)){
+            return true;
+        }
+        j++;
     }
     return false;
 }
@@ -137,8 +148,8 @@ void Token::checkTokens(){
         setToken(tkn);
         j++;
     }
-    for(int i = 0; i < (int)tkns.size(); i++)
-        std::cout << std::get<0>(tkns[i]) << " ";
+        for(int y = 0; y < (int)tkns.size(); y++)
+        std::cout << std::get<0>(tkns[y]) << " ";
 
     system("cls");
     solveUnarySub(j);

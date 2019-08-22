@@ -53,6 +53,7 @@ std::tuple<std::string, int, bool, bool> Expression::topStack(TStack<std::tuple<
 
 void Expression::eval(std::string &exp){
     exp = "(" + exp + ")";
+    //removeSpaces(exp);
     removeVariables(exp);
     removeSpaces(exp);
     Token* token = new Token(exp);
