@@ -117,6 +117,7 @@ void Token::checkTokens(){
     int i = 0, j = 0, priority = 0;
     while(i < (int)exp.length()){
         tk = findNextToken(exp, i);
+        /// find next token deixa que eu explico a gambiarra
         if(tk == "(" || tk == ")"){
             if(tk == "("){
                 priority += 4;
@@ -148,10 +149,6 @@ void Token::checkTokens(){
         setToken(tkn);
         j++;
     }
-        for(int y = 0; y < (int)tkns.size(); y++)
-        std::cout << std::get<0>(tkns[y]) << " ";
-
-    system("cls");
     solveUnarySub(j);
 }
 

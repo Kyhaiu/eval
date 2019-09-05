@@ -32,9 +32,9 @@ TStack<std::tuple<std::string, int, bool, bool>>* Expression::getStack(int op){
         return reversePolishStack;
     } else if(op == 4){
         TStack<std::tuple<std::string, int, bool, bool>>* s = new TStack<std::tuple<std::string, int, bool, bool>>();
-        return s;
+        return s; ///cria ponteiro das pilhas;
     }
-    return nullptr; //apenas para tirar o warning
+    return nullptr; ///apenas para tirar o warning
 }
 
 void Expression::pushStack(TStack<std::tuple<std::string, int, bool, bool>>* pointerStack, std::tuple<std::string, int, bool, bool> token){
@@ -43,7 +43,6 @@ void Expression::pushStack(TStack<std::tuple<std::string, int, bool, bool>>* poi
 }
 
 void Expression::popStack(TStack<std::tuple<std::string, int, bool, bool>>* pointerStack){
-    std::cout << std::get<0>(topStack(pointerStack)) << " " << std::flush;
     pointerStack->pop();
 }
 
@@ -53,15 +52,14 @@ std::tuple<std::string, int, bool, bool> Expression::topStack(TStack<std::tuple<
 
 void Expression::eval(std::string &exp){
     exp = "(" + exp + ")";
-    //removeSpaces(exp);
+    ///problema na função stoi/stod
     removeVariables(exp);
+    ///remove variaveis/constantes da expressão
     removeSpaces(exp);
+    ///remove os espaços
     Token* token = new Token(exp);
     token->checkTokens();
     mapTokens = token->getMapToken();
-    system("cls");
-    for(int i = 0; i < (int)mapTokens.size(); i++)
-        std::cout << std::get<0>(mapTokens[i]) << " ";
     reversePolish(mapTokens);
 }
 
@@ -88,12 +86,10 @@ void Expression::reversePolish(std::vector<std::tuple<std::string, int, bool, bo
         }
     }
     std::cout << std::endl;
-    system("cls");
 	while(!getStack(2)->isEmpty()) {
 		pushStack(getStack(3), getStack(2)->top());
 		popStack(getStack(2));
 	}
-	system("pause");
     solve();
 }
 
@@ -105,7 +101,6 @@ bool Expression::HigerPriority(int op1, int op2){
 }
 
 void Expression::solve(){
-    system("cls");
     double num1, num2;
     std::tuple<std::string, int, bool, bool> aux;
     while(!getStack(3)->isEmpty()){
@@ -225,7 +220,8 @@ void Expression::solve(){
             }
         }
     }
-    system("cls");
+
+    std::cout << "Resultado = " <<  std::get<0>(topStack(getStack(2))) << std::endl;
     popStack(getStack(2));
     system("pause");
 }
@@ -253,9 +249,10 @@ void Expression::removeSpaces(std::string &exp){
 }
 
 void Expression::removeVariables(std::string &exp){
-    int i = 0;
+    int i = 0, j = 0;
     std::regex e("[A-Z]");
     std::smatch m;
+    std::string aux;
     while(exp[i] != '\0'){
         std::string newExp, variable;
         std::string temp = exp.substr(i, 1);
@@ -265,10 +262,17 @@ void Expression::removeVariables(std::string &exp){
             newExp = "";
             i = i + 14;
         } else if(std::regex_search(temp ,m,e)){
-            std::cout << "Informe o valor da variavel 0 " << exp[i] << ": ";
+            aux = exp[i];
+            j = i;
+            std::cout << "Informe o valor da variavel '" << exp[i] << "': ";
             std::cin >> variable;
-            newExp = exp.substr(0, i) + variable + exp.substr(i+1, exp.size());
-            exp = newExp;
+            while(exp[j] != '\0'){
+                if(exp.substr(j, 1) == aux && exp.substr(j, 2) != "PI"){
+                    newExp = exp.substr(0, j) + variable + exp.substr(j+1, exp.size());
+                    exp = newExp;
+                }
+                j++;
+            }
             variable = "";
             continue;
         }
